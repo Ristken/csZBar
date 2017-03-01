@@ -74,7 +74,7 @@
 
         <!-- Declare Camera Usage for iOS10+ -->
         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-            <string></string>
+            <string>VIN barcode and Vehicle image</string>
         </config-file>
 
         <framework src="AVFoundation.framework" />
