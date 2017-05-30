@@ -172,7 +172,7 @@ implements SurfaceHolder.Callback {
                 public void onSizeChanged (int w, int h, int oldW, int oldH) {
                     surfW = w;
                     surfH = h;
-                    matchSurfaceToPreviewRatio();
+                    // matchSurfaceToPreviewRatio();
                 }
             };
             scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
@@ -294,7 +294,7 @@ implements SurfaceHolder.Callback {
 
         surfW = w;
         surfH = h;
-        matchSurfaceToPreviewRatio();
+        // matchSurfaceToPreviewRatio();
 
         tryStopPreview();
         holder = hld;
@@ -449,30 +449,30 @@ implements SurfaceHolder.Callback {
 
     // Match the aspect ratio of the preview SurfaceView with the camera's preview aspect ratio,
     // so that the displayed preview is not stretched/squashed.
-    private void matchSurfaceToPreviewRatio () {
-        if(camera == null) return;
-        if(surfW == 0 || surfH == 0) return;
+    // private void matchSurfaceToPreviewRatio () {
+    //     if(camera == null) return;
+    //     if(surfW == 0 || surfH == 0) return;
 
-        // Resize SurfaceView to match camera preview ratio (avoid stretching).
-        Camera.Parameters params = camera.getParameters();
-        Camera.Size size = params.getPreviewSize();
-        float previewRatio = (float) size.height / size.width; // swap h and w as the preview is rotated 90 degrees
-        float surfaceRatio = (float) surfW / surfH;
+    //     // Resize SurfaceView to match camera preview ratio (avoid stretching).
+    //     Camera.Parameters params = camera.getParameters();
+    //     Camera.Size size = params.getPreviewSize();
+    //     float previewRatio = (float) size.height / size.width; // swap h and w as the preview is rotated 90 degrees
+    //     float surfaceRatio = (float) surfW / surfH;
 
-        if(previewRatio > surfaceRatio) {
-            scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                surfW,
-                Math.round((float) surfW / previewRatio),
-                Gravity.CENTER
-            ));
-        } else if(previewRatio < surfaceRatio) {
-            scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-                Math.round((float) surfH * previewRatio),
-                surfH,
-                Gravity.CENTER
-            ));
-        }
-    }
+    //     if(previewRatio > surfaceRatio) {
+    //         scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
+    //             surfW,
+    //             Math.round((float) surfW / previewRatio),
+    //             Gravity.CENTER
+    //         ));
+    //     } else if(previewRatio < surfaceRatio) {
+    //         scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
+    //             Math.round((float) surfH * previewRatio),
+    //             surfH,
+    //             Gravity.CENTER
+    //         ));
+    //     }
+    // }
 
     // Stop the camera preview safely.
     private void tryStopPreview () {
