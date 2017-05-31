@@ -267,8 +267,8 @@ implements SurfaceHolder.Callback {
         // Sanity check - holder must have a surface...
         if(hld.getSurface() == null) die("There is no camera surface");
 
-        surfW = w;
-        surfH = h;
+        // surfW = w;
+        // surfH = h;
         // matchSurfaceToPreviewRatio();
 
         tryStopPreview();
@@ -461,14 +461,13 @@ implements SurfaceHolder.Callback {
                 Camera.CameraInfo info = new Camera.CameraInfo();
                 Camera.getCameraInfo(cameraId, info);
 
-                int result;
                 if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    result = (info.orientation + degrees) % 360;
-                    result = (360 - result) % 360;  // compensate the mirror
+                    degrees = (info.orientation + degrees) % 360;
+                    degrees = (360 - degrees) % 360;  // compensate the mirror
                 } else {  // back-facing
-                    result = (info.orientation - degrees + 360) % 360;
+                    degrees = (info.orientation - degrees + 360) % 360;
                 }
-                camera.setDisplayOrientation(result);
+                camera.setDisplayOrientation(degrees);
 
                 android.hardware.Camera.Parameters camParams = camera.getParameters();
 
