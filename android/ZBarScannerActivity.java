@@ -265,15 +265,15 @@ implements SurfaceHolder.Callback {
     public void surfaceChanged (SurfaceHolder hld, int fmt, int w, int h)
     {
         // Sanity check - holder must have a surface...
-        if(hld.getSurface() == null) die("There is no camera surface");
+        // if(hld.getSurface() == null) die("There is no camera surface");
 
         // surfW = w;
         // surfH = h;
         // matchSurfaceToPreviewRatio();
 
-        tryStopPreview();
-        holder = hld;
-        tryStartPreview();
+        // tryStopPreview();
+        // holder = hld;
+        // tryStartPreview();
     }
     public void onConfigurationChanged(Configuration newConfig)
     {
