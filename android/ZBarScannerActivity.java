@@ -30,12 +30,7 @@ import android.widget.TextView;
 import android.content.pm.PackageManager;
 import android.view.Surface;
 
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Image;
@@ -67,6 +62,7 @@ implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private ImageScanner scanner;
     private int surfW, surfH;
+    private int cameraId;
 
     // Customisable stuff
     String whichCamera;
@@ -205,6 +201,7 @@ implements SurfaceHolder.Callback {
                 int numCams = Camera.getNumberOfCameras();
                 CameraInfo cameraInfo = new CameraInfo();
                 for(int i=0; i<numCams; i++) {
+                    cameraId = i;
                     Camera.getCameraInfo(i, cameraInfo);
                     if(cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
                         camera = Camera.open(i);
@@ -223,29 +220,7 @@ implements SurfaceHolder.Callback {
             return;
         }
     }
-    private void setCameraDisplayOrientation(Activity activity ,int cameraId) {
-        android.hardware.Camera.CameraInfo info =
-                new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(cameraId, info);
-        int rotation = activity.getWindowManager().getDefaultDisplay()
-                .getRotation();
-        int degrees = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
-        }
 
-        int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;  // compensate the mirror
-        } else {  // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-        }
-        camera.setDisplayOrientation(result);
-    }
     @Override
     public void onPause ()
     {
@@ -303,31 +278,7 @@ implements SurfaceHolder.Callback {
     public void onConfigurationChanged(Configuration newConfig)
     {
         super.onConfigurationChanged(newConfig);
-        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        switch(rotation)
-        {
-        case 0: // '\0'
-            rotation = 90;
-            break;
 
-        case 1: // '\001'
-            rotation = 0;
-            break;
-
-        case 2: // '\002'
-            rotation = 270;
-            break;
-
-        case 3: // '\003'
-            rotation = 180;
-            break;
-
-        default:
-            rotation = 90;
-            break;
-        }
-        camera.setDisplayOrientation(rotation);
-        android.hardware.Camera.Parameters params = camera.getParameters();
         tryStopPreview();
         tryStartPreview();
 
@@ -447,33 +398,6 @@ implements SurfaceHolder.Callback {
         }
     }
 
-    // Match the aspect ratio of the preview SurfaceView with the camera's preview aspect ratio,
-    // so that the displayed preview is not stretched/squashed.
-    // private void matchSurfaceToPreviewRatio () {
-    //     if(camera == null) return;
-    //     if(surfW == 0 || surfH == 0) return;
-
-    //     // Resize SurfaceView to match camera preview ratio (avoid stretching).
-    //     Camera.Parameters params = camera.getParameters();
-    //     Camera.Size size = params.getPreviewSize();
-    //     float previewRatio = (float) size.height / size.width; // swap h and w as the preview is rotated 90 degrees
-    //     float surfaceRatio = (float) surfW / surfH;
-
-    //     if(previewRatio > surfaceRatio) {
-    //         scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-    //             surfW,
-    //             Math.round((float) surfW / previewRatio),
-    //             Gravity.CENTER
-    //         ));
-    //     } else if(previewRatio < surfaceRatio) {
-    //         scannerSurface.setLayoutParams(new FrameLayout.LayoutParams(
-    //             Math.round((float) surfH * previewRatio),
-    //             surfH,
-    //             Gravity.CENTER
-    //         ));
-    //     }
-    // }
-
     // Stop the camera preview safely.
     private void tryStopPreview () {
         // Stop camera preview before making changes.
@@ -498,31 +422,26 @@ implements SurfaceHolder.Callback {
         if(holder != null) {
             try {
                 int rotation = getWindowManager().getDefaultDisplay().getRotation();
-                switch(rotation)
-                {
-                case 0: // '\0'
-                    rotation = 90;
-                    break;
 
-                case 1: // '\001'
-                    rotation = 0;
-                    break;
-
-                case 2: // '\002'
-                    rotation = 270;
-                    break;
-
-                case 3: // '\003'
-                    rotation = 180;
-                    break;
-
-                default:
-                    rotation = 90;
-                    break;
+                int degrees = 0;
+                switch (rotation) {
+                    case Surface.ROTATION_0: degrees = 0; break;
+                    case Surface.ROTATION_90: degrees = 90; break;
+                    case Surface.ROTATION_180: degrees = 180; break;
+                    case Surface.ROTATION_270: degrees = 270; break;
                 }
-                // 90 degrees rotation for Portrait orientation Activity.
-               // camera.setDisplayOrientation(rotation);
-                setCameraDisplayOrientation(this, 0);
+
+                Camera.CameraInfo info = new Camera.CameraInfo();
+                Camera.getCameraInfo(cameraId, info);
+
+                int result;
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    result = (info.orientation + degrees) % 360;
+                    result = (360 - result) % 360;  // compensate the mirror
+                } else {  // back-facing
+                    result = (info.orientation - degrees + 360) % 360;
+                }
+                camera.setDisplayOrientation(result);
 
                 android.hardware.Camera.Parameters camParams = camera.getParameters();
 
