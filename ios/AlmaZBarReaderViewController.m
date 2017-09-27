@@ -13,6 +13,16 @@
 
 @implementation AlmaZBarReaderViewController
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    UIToolbar *toolbar = [[controls subviews] firstObject];
+    
+    if ([toolbar isKindOfClass:UIToolbar.class]) {
+        toolbar.items = @[ toolbar.items[0], toolbar.items[1] ];
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
